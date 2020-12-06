@@ -1,19 +1,25 @@
-const express = require('express');
-const ProductController = require('./app/controllers/ProductController');
-const routes = express.Router();
+const express = require("express")
+const multer = require("./app/middlewares/multer")
 
-routes.get('/', function (req, res) {
-    return res.render("layout.njk")
-});
-routes.get("/products/:id/edit", ProductController.edit)
-routes.get("/products/create", ProductController.create)
-routes.post("/products", ProductController.post)
-routes.put("/products", ProductController.put)
-routes.delete("/products", ProductController.delete)
+const ProductController = require("./app/controllers/ProductController")
 
+const routes = express.Router()
 
-routes.get("/ads/create", function(req,res){
-    return res.redirect("/products/create")
+routes.get("/", (req, res ) => {
+  return res.render("layout.njk")
 })
 
-module.exports = routes;
+routes.get("/products/create", ProductController.create)
+routes.get("/products/:id", ProductController.show)
+routes.get("/products/:id/edit", ProductController.edit)
+routes.post("/products", multer.array("photos", 6), ProductController.post)
+routes.put("/products", multer.array("photos", 6), ProductController.update)
+routes.delete("/products", ProductController.delete)
+
+// Alias
+routes.get("/ads/create", (req, res ) => {
+  return res.redirect("/products/create")
+})
+
+
+module.exports = routes
